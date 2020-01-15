@@ -22,7 +22,10 @@
         autoStart: false, // Display thumbnails on opening
         hideOnClose: true, // Hide thumbnail grid when closing animation starts
         parentEl: ".fancybox-container", // Container is injected into this element
-        axis: "y" // Vertical (y) or horizontal (x) scrolling
+        axis: "y", // Vertical (y) or horizontal (x) scrolling
+        classes: "", // Additional thumbnail classes
+        lazyload: false, // Load thumbnails lazily
+        bgDataAttr: "data-bg" // Data attribute used for lazyloading
       }
     },
     $.fancybox.defaults
@@ -77,8 +80,11 @@
       var self = this,
         instance = self.instance,
         parentEl = self.opts.parentEl,
+        classes = self.opts.classes ? 'class="' + self.opts.classes + '"' : false,
+        lazyload = self.opts.lazyload,
         list = [],
-        src;
+        src,
+        srcAttribute;
 
       if (!self.$grid) {
         // Create main element
@@ -107,11 +113,14 @@
           src = item.src;
         }
 
+        // Build src attribute depending on lazyload option (use bgDataAttr or inline style)
+        srcAttribute = lazyload ? self.opts.bgDataAttr + '="'+ src +'"' : 'style="background-image:url(' + src + ')"';
+
         list.push(
           '<a href="javascript:;" tabindex="0" data-index="' +
           i +
           '"' +
-          (src && src.length ? ' style="background-image:url(' + src + ')"' : 'class="fancybox-thumbs-missing"') +
+          (src && src.length ? classes + ' ' + srcAttribute : 'class="fancybox-thumbs-missing"') +
           "></a>"
         );
       });
